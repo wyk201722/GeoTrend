@@ -17,12 +17,14 @@
  * @create 2018/11/17
  * @since 1.0.0
  */
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.jar.Attributes;
 
 public class InvertedIndex {
     public static void main(String[] args) {
@@ -39,51 +41,44 @@ public class InvertedIndex {
                 String line = "";
                 line = br.readLine();
                 LinkedList<Text> UserSet = new LinkedList<>();
-                HashMap<String, LinkedList<String>> invertIndex = new HashMap<>();
+                HashMap<String, LinkedList<Text>> invertIndex = new HashMap<>();
+
+
                 while (line != null) {
                     String recordID = "";
+                    String time ="";
                     String tempText = "";
                     LinkedList<String> text = new LinkedList<>();
-                    int i = line.length();
-                    int cout = 0;
-//                        System.out.println(i);
+                    String[] location = new String[4];
+                    String[] result = line.split(",");
 
-                    for(int j = 0; j < i; j++) {
-
-                        if(line.charAt(j) == ',') {
-                            cout++;
-                            j++;
+                    for(int i = 0; i < result.length; i++) {
+                        if(i < 4) {
+                            location[i] = result[i];
+                            i++;
                         }
-                        if(cout == 4) {
-                            recordID = recordID.concat(line.substring(j, j+1));
+                        if(i == 4) {
+                            recordID = result[i];
+                            i++;
                         }
-                        if(cout >= 6) {
-
-                            tempText = tempText.concat(line.substring(j, i));
-                            break;
+                        if(i == 5) {
+                            time = result[i];
+                            i++;
                         }
-                    }//recordID: get UserId; temptext get the whole text;
-//                        System.out.println(tempText);
-                    String eachT = "";
-                    for(int k = 0; k < tempText.length(); k++) {
 
-                        if(tempText.charAt(k) != ',') {
-                            eachT = eachT.concat(tempText.substring(k, k + 1));
+                        if(i > 5) {
+                            text.add(result[i]);
                         }
-                        if(tempText.charAt(k) == ',') {
-                            text.add(eachT);
-                            eachT = "";
-                        }
-                    }//make the temptext saparated by "," and put them into the Text(linkedList)
-
-//                        for(int temp = 0; temp < text.size(); temp++) {
-//                            System.out.println(text.get(temp));
-//                        }//every user's text
 
 
+                    }
 
-                    UserSet.add(new Text(recordID, text));
+                    UserSet.add(new Text(location,recordID,time,text));
 
+//                    for(int j = 0; j < text.size();j++){
+//                        System.out.print(text.get(j) + " ");
+//                    }
+//                    System.out.println();
                     line = br.readLine(); // 一次读入一行数据
                 }
 
@@ -101,21 +96,20 @@ public class InvertedIndex {
 
 
                 for(int j = 0; j < UserSet.size(); j++ ) {
-                    System.out.println(j);
-                    System.out.println(UserSet.get(j).UserID);
+//                    System.out.println(j);
+//                    System.out.println(UserSet.get(j).time);
                     for(int u = 0; u < UserSet.get(j).text.size(); u++) {
-                        System.out.print(UserSet.get(j).text.get(u) + " ");
+//                        System.out.print(UserSet.get(j).text.get(u) + " ");
                         if(!invertIndex.containsKey(UserSet.get(j).text.get(u))) {// If the text shows first time, put the key(test) and value(Username)
 
-                            LinkedList<String> Un = new LinkedList<>();
-                            Un.add(UserSet.get(j).UserID);
+                            LinkedList<Text> Un = new LinkedList<>();
+                            Un.add(UserSet.get(j));
 
                             invertIndex.put(UserSet.get(j).text.get(u), Un);
                         }
                         else {
-                            invertIndex.get(UserSet.get(j).text.get(u)).add(UserSet.get(j).UserID);// if the text is already exist, make the linkedlist add Username
+                            invertIndex.get(UserSet.get(j).text.get(u)).add(UserSet.get(j));// if the text is already exist, make the linkedlist add Username
                         }
-
 
                     }
 
@@ -151,10 +145,13 @@ public class InvertedIndex {
 class Text{
     public String UserID;
     public String[] Userlocation;
+
     public LinkedList<String> text;
     public String time;
-    Text(String un, LinkedList<String> tt){
-        this.UserID = un;
+    Text(String[] UL,String uid, String time, LinkedList<String> tt ){
+        this.Userlocation = UL;
+        this.time = time;
+        this.UserID = uid;
         this.text = tt;
     }
     public void addtext(String t) {
