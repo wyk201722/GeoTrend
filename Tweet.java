@@ -20,21 +20,20 @@ import java.util.LinkedList;
  * @create 2018/11/17
  * @since 1.0.0
  */
-public class Text implements Serializable{
+public class Tweet implements Serializable{
 
         public String UserID;
-        public String[] Userlocation;
+        public double[] Userlocation;
 
         public LinkedList<String> text;
         public String time;
-        Text(String[] UL,String uid, String time, LinkedList<String> tt ){
+
+    Tweet(double[] UL,String uid, String time, LinkedList<String> tt ){
             this.Userlocation = UL;
             this.time = time;
             this.UserID = uid;
             this.text = tt;
         }
-        public void addtext(String t) {
-            text.add(t);
-        }
+
 
 }
