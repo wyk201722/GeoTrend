@@ -42,6 +42,7 @@ public class quadTree implements Serializable {
     public ArrayList<Tweet> list;
 
     quadTree(quadTree pa, double maxX, double minX, double maxY, double minY, int maxCap, int level){
+
         this.maxX = maxX;
         this.maxY = maxY;
         this.minY = minY;
@@ -218,9 +219,6 @@ public class quadTree implements Serializable {
                         this.children[i].addNewPost(post);
                     }
                 }
-
-            } else {
-                System.out.println("OOOOoooooops");
             }
         }
     }
@@ -283,7 +281,10 @@ public class quadTree implements Serializable {
                 }
 
         }*/
-
+    public void queryMinimumBoundTree(ArrayList<Tweet> arr){
+        quadTree minimumBoundTree = new quadTree(null, this.maxX,this.minX,this.maxY,this.minY,0,0);
+        this.query(arr, minimumBoundTree);
+    }
 
     public void createChildren() {
 
@@ -360,11 +361,6 @@ public class quadTree implements Serializable {
 
 
     public void query(ArrayList<Tweet> arr, quadTree qt) {
-//        if(this.children[0] == null && this.children[1] == null && this.children[2] == null && this.children[3] == null) {
-//            for(int i = 0; i < this.currentCapacity; i++) {
-//                arr.add(this.list.get(i));
-//            }
-//        }
 
 
         if(this.list.size() == 0 ) {
@@ -403,5 +399,54 @@ public class quadTree implements Serializable {
                 }
             }
         }
+    }
+
+    public boolean isInRange(Tweet t, double x, double y, double range) {
+        return ( Math.sqrt(Math.pow(t.Userlocation[0] - x,2) +  Math.pow(t.Userlocation[1] - y,2)) <= range);
+
+    }
+
+    public ArrayList<Tweet> rangeQuery(double x, double y, double range) {
+        quadTree queryRectangle = new quadTree(null, x+range, x-range, y+range, y-range,0,0);
+        ArrayList<Tweet> origin = new ArrayList<>();
+
+        this.query(origin, queryRectangle);
+
+        ArrayList<Tweet> result = new ArrayList<>();
+        for(int i = 0; i < origin.size(); i++) {
+            if(isInRange(origin.get(i),x,y, range)) {
+                result.add(origin.get(i));
+            }
+        }
+        return result;
+    }
+
+    public ArrayList<Tweet> queryKNN(double x, double y, int k, double range) {
+        ArrayList<Tweet> q1 = new ArrayList<>();
+        ArrayList<Tweet> result = new ArrayList<>();
+
+        q1 = this.rangeQuery(x,y, range);
+        if(q1.size() < k) {
+            q1 = this.rangeQuery(x,y, range+1);
+        } else if(q1.size() == k) {
+            return q1;
+        } else {
+            Comparator<Tweet> c = new Comparator<Tweet>() {
+                @Override
+                public int compare(Tweet o1, Tweet o2) {
+                    if(Math.sqrt(Math.pow(o1.Userlocation[0] - x,2) +  Math.pow(o1.Userlocation[1] - y,2)) <= Math.sqrt(Math.pow(o2.Userlocation[0] - x,2) +  Math.pow(o2.Userlocation[1] - y,2))){
+                        return -1;
+                    }
+                    return 1;
+                }
+            };
+            q1.sort(c);
+            for(int i = 0; i < k; i++) {
+//                System.out.println(q1.get(i).Userlocation[0]);
+                result.add(q1.get(i));
+            }
+            return result;
+        }
+        return null;
     }
 }
