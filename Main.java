@@ -22,30 +22,13 @@ import java.util.*;
 public class Main {
     public static void main(String [] args)
     {
+        /*QuadTree test part
         quadTree it = new quadTree(null,180,-180,90,-90,3000,0);
         quadTree mbr1 = new quadTree(null,28.101051,40.036021,117.733459,105.305481, 0,0);
-
         it.readfileAndGenerateHashMap();
-//        System.out.println(it.children[0] == null);
-
-//        it.generateStagingFile();
-//        quadTree it2;
-//        it2= it.loadStagingFile();
-//        it.invertIndexHashMap = hp;
-//        it.printHashMap();
-//        System.out.println(it2.invertIndexHashMap.size());
-
-//        System.out.println(it.returnChildrenSize());
-//        for(int i = 0; i < 4; i++){
-//            System.out.println(it.children[i] != null);
-//        }
-//        for(int i = 0; i < 4; i++){
-//            System.out.println(it.children[0].children[i].list.size());
-//        }
         ArrayList<Tweet> q1 = new ArrayList<>();
         it.queryMinimumBoundTree(q1);
         System.out.println("q1.size() " + q1.size());
-
         ArrayList<Tweet> q2;
         q2 = it.rangeQuery(0,0,6);
         System.out.println(q2.size());
@@ -57,7 +40,6 @@ public class Main {
 //        for(int i = 0; i < 3; i++){
 //            System.out.println(Math.sqrt(Math.pow(q2.get(i).Userlocation[0] - 0,2) +  Math.pow(q2.get(i).Userlocation[1] - 0,2)));
 //        }
-
 //        for(int i =0; i < q1.size(); i++) {
 //            for(int j = 0; j < q1.get(i).text.size(); j++) {
 //                System.out.print(q1.get(i).text.get(j) + " ");
@@ -67,10 +49,12 @@ public class Main {
 //        System.out.println(it.invertIndexHashMap.size());
 //        for(int i = 0; i < 4; i++) {
 //            System.out.println(it.children[i].invertIndexHashMap.size());
-//        }
+//        }*/
 
-//        System.out.println(Math.pow(8,2));
-
+        //Grid test part
+        Grid g1 = new Grid(10,10,null);
+        System.out.println(g1.getX(-180));
+        System.out.println(g1.getY(90));
     }
 
 

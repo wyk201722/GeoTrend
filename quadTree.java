@@ -236,51 +236,7 @@ public class quadTree implements Serializable {
         return this.currentCapacity+count;
     }
 
-        /*
-        if (deeplevel < limitLevel || currentLevel != deeplevel) {
-            for (int j = 0; j < post.text.size(); j++) {
-                if (this.invertIndexHashMap.containsKey(post.text.get(j))) {
-                    this.invertIndexHashMap.get(post.text.get(j)).add(post);
-                } else {
-                    LinkedList<Tweet> Un = new LinkedList<>();
-                    Un.add(post);
-                    this.invertIndexHashMap.put(post.text.get(j), Un);
-                }
-            }
-            this.currentCapacity++;
-            if (currentCapacity >= maxCapacity && (children[0] == null && children[1] == null && children[2] == null && children[3] == null)) {
-                this.createChildren();
-                for (int i = 0; i < 4; i++) {
-                    if (isUserInThisQuad(post, children[i])) {
-                        children[i].addNewPost(post);
-                    }
-                }
-            } else if (currentCapacity >= maxCapacity && children != null) {
-                for (int i = 0; i < 4; i++) {
-                    if (isUserInThisQuad(post, children[i])) {
-                        children[i].addNewPost(post);
-                    }
-                }
-            }
-        } else {
-            /*if(currentLevel != deeplevel) {
-                for (int i = 0; i < 4; i++) {
-                    if (isUserInThisQuad(post, children[i])) {
-                        children[i].addNewPost(post);
-                    }
-                }
-            } else {
-                for (int j = 0; j < post.text.size(); j++) {
-                    if (this.invertIndexHashMap.containsKey(post.text.get(j))) {
-                        this.invertIndexHashMap.get(post.text.get(j)).add(post);
-                    } else {
-                        LinkedList<Tweet> Un = new LinkedList<>();
-                        Un.add(post);
-                        this.invertIndexHashMap.put(post.text.get(j), Un);
-                    }
-                }
 
-        }*/
     public void queryMinimumBoundTree(ArrayList<Tweet> arr){
         quadTree minimumBoundTree = new quadTree(null, this.maxX,this.minX,this.maxY,this.minY,0,0);
         this.query(arr, minimumBoundTree);
