@@ -24,15 +24,16 @@ public class Tweet implements Serializable{
 
         public String UserID;
         public double[] Userlocation;
-
+        public String textstring;
         public LinkedList<String> text;
         public String time;
 
-    Tweet(double[] UL,String uid, String time, LinkedList<String> tt ){
+    Tweet(double[] UL,String uid, String time, LinkedList<String> tt , String ts){
             this.Userlocation = UL;
             this.time = time;
             this.UserID = uid;
             this.text = tt;
+            this.textstring = ts;
         }
 
 

@@ -166,6 +166,7 @@ public class quadTree implements Serializable {
     public Tweet buildNewTweet(String line) {
             String recordID = "";
             String time = "";
+            String ts = "";
             String tempText = "";
             LinkedList<String> text = new LinkedList<>();
             String[] location = new String[4];
@@ -183,6 +184,7 @@ public class quadTree implements Serializable {
                     i++;
                 }
                 if (i > 5) {
+                    ts = ts + " " + result[i];
                     text.add(result[i]);
                 }
             }
@@ -194,7 +196,7 @@ public class quadTree implements Serializable {
             double[] loca1 = new double[2];
             loca1[0] = (loca[0] + loca[1]) / 2;
             loca1[1] = (loca[2] + loca[3]) / 2;
-            return new Tweet(loca1, recordID, time, text);
+            return new Tweet(loca1, recordID, time, text,ts);
     }
 
     public void addNewPost(Tweet post) {
@@ -311,9 +313,6 @@ public class quadTree implements Serializable {
             }
         }*/
     }
-    public boolean isFullInside(quadTree mbr, quadTree range) {
-        return (mbr.maxX <= range.maxX &&  mbr.minX >= range.minX && mbr.maxY <= range.maxY && mbr.minY >= range.minY );
-    }
 
 
     public void query(ArrayList<Tweet> arr, quadTree qt) {
@@ -359,15 +358,12 @@ public class quadTree implements Serializable {
 
     public boolean isInRange(Tweet t, double x, double y, double range) {
         return ( Math.sqrt(Math.pow(t.Userlocation[0] - x,2) +  Math.pow(t.Userlocation[1] - y,2)) <= range);
-
     }
 
     public ArrayList<Tweet> rangeQuery(double x, double y, double range) {
         quadTree queryRectangle = new quadTree(null, x+range, x-range, y+range, y-range,0,0);
         ArrayList<Tweet> origin = new ArrayList<>();
-
         this.query(origin, queryRectangle);
-
         ArrayList<Tweet> result = new ArrayList<>();
         for(int i = 0; i < origin.size(); i++) {
             if(isInRange(origin.get(i),x,y, range)) {
@@ -378,7 +374,7 @@ public class quadTree implements Serializable {
     }
 
     public ArrayList<Tweet> queryKNN(double x, double y, int k, double range) {
-        ArrayList<Tweet> q1 = new ArrayList<>();
+        ArrayList<Tweet> q1 ;
         ArrayList<Tweet> result = new ArrayList<>();
 
         q1 = this.rangeQuery(x,y, range);
