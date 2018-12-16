@@ -23,24 +23,24 @@ public class Main {
     public static void main(String [] args)
     {
         /*QuadTree test part*/
-        quadTree it = new quadTree(null,180,-180,90,-90,3000,0);
-        quadTree mbr1 = new quadTree(null,0.154372, 0,51.667789, 51.306926, 0,0);
-       quadTree mbr2 = new quadTree(null,139.814362,139.6571201,35.780916,35.619906,0 ,0 );
-        it.readfileAndGenerateHashMap();
+//        quadTree it = new quadTree(null,180,-180,90,-90,3000,0);
+//        quadTree mbr1 = new quadTree(null,0.154372, 0,51.667789, 51.306926, 0,0);
+//        quadTree mbr2 = new quadTree(null,139.814362,139.6571201,35.780916,35.619906,0 ,0 );
+//        it.readfileAndGenerateHashMap();
 //        ArrayList<Tweet> q1 = new ArrayList<>();
 //        it.query(q1, mbr2);
 //        System.out.println(q1.size());
 //        for(int i = 0; i < q1.size(); i++) {
 //            System.out.println(q1.get(i).textstring);
 //        }
-        System.out.println();
-        /* range   query*/
-        ArrayList<Tweet> q2;
-        q2 = it.rangeQuery(0,0,6);
-        System.out.println(q2.size());
-        for(int i = 0; i < q2.size(); i++) {
-            System.out.println(Math.sqrt(Math.pow(q2.get(i).Userlocation[0] - 0,2) +  Math.pow(q2.get(i).Userlocation[1] - 0,2)));
-        }
+//        System.out.println();
+//        /* range   query*/
+//        ArrayList<Tweet> q2;
+//        q2 = it.rangeQuery(0,0,6);
+//        System.out.println(q2.size());
+//        for(int i = 0; i < q2.size(); i++) {
+//            System.out.println(Math.sqrt(Math.pow(q2.get(i).Userlocation[0] - 0,2) +  Math.pow(q2.get(i).Userlocation[1] - 0,2)));
+//        }
 
 //        q2 = it.queryKNN(0,0,3,5);
 //        for(int i = 0; i < 3; i++){
@@ -80,18 +80,16 @@ public class Main {
 
 //       ArrayList<Tweet> re = g1.queryRectanglewithLocation(0.154372, 0,51.667789, 51.306926);
 
-        ArrayList<Tweet> re = g1.queryRectanglewithLocation(139.814362,139.6571201,35.780916,35.619906);
+//        ArrayList<Tweet> re = g1.queryRectanglewithLocation(139.814362,139.6571201,35.780916,35.619906);
 //                System.out.println(re.size());
 //        for (Tweet t:
 //             re) {
 //            System.out.println( t.textstring);
 //        }
-        ArrayList<Tweet> re2 = g1.rangeQuery(0,0,6);
-        for(int i = 0; i < re2.size(); i++) {
-            System.out.println(Math.sqrt(Math.pow(re2.get(i).Userlocation[0] - 0,2) +  Math.pow(q2.get(i).Userlocation[1] - 0,2)));
-        }
-
-
+//        ArrayList<Tweet> re2 = g1.rangeQuery(0,0,6);
+//        for(int i = 0; i < re2.size(); i++) {
+//            System.out.println(Math.sqrt(Math.pow(re2.get(i).Userlocation[0] - 0,2) +  Math.pow(q2.get(i).Userlocation[1] - 0,2)));
+//        }
     }
 
 
