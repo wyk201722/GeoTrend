@@ -20,59 +20,26 @@ import java.util.ArrayList;
  * @since 1.0.0
  */
 public class Rectangle {
-    private double maxX;
-    private double minX;
-    private double maxY;
-    private double minY;
-    private ArrayList<Tweet> userList;
+    public double maxX;
+    public double minX;
+    public double maxY;
+    public double minY;
+    public ArrayList<Tweet> userList;
+
     public Rectangle(double maxX, double minX, double maxY, double minY) {
         this.maxX = maxX;
         this.minX = minX;
         this.maxY = maxY;
         this.minY = minY;
-
     }
-
-    public double getMaxX() {
-        return maxX;
-    }
-
-    public double getMinX() {
-        return minX;
-    }
-
-    public double getMaxY() {
-        return maxY;
-    }
-
-    public double getMinY() {
-        return minY;
-    }
-
     public double getArea() {
         return (maxX-minX) * (maxY - minY);
     }
 
-    public void setMaxX(double maxX) {
-        this.maxX = maxX;
-    }
-
-    public void setMinX(double minX) {
-        this.minX = minX;
-    }
-
-    public void setMaxY(double maxY) {
-        this.maxY = maxY;
-    }
-
-    public void setMinY(double minY) {
-        this.minY = minY;
-    }
-
     public void updateRec(Tweet post) {
         if(!this.isUserHere(post)) {
-            if ((post.Userlocation[0] - this.getMaxX()) * post.Userlocation[0] - this.getMinX() > 0) {
-                if ((post.Userlocation[1] - this.getMaxY()) * post.Userlocation[1] - this.getMinY() > 0) {
+            if ((post.Userlocation[0] - this.maxX) * post.Userlocation[0] - this.minX > 0) {
+                if ((post.Userlocation[1] - this.maxY) * post.Userlocation[1] - this.minY > 0) {
                     this.maxY = Math.max(this.maxY,post.Userlocation[1]);
                     this.minY = Math.min(this.minY, post.Userlocation[1]);
                     this.maxX = Math.max(this.maxX,post.Userlocation[0]);
@@ -93,5 +60,9 @@ public class Rectangle {
                 && (post.Userlocation[0] < this.maxX)
                 && (post.Userlocation[1] > this.minY)
                 && (post.Userlocation[1] < this.maxY);
+    }
+
+    public void updateRec2(Rectangle child,Rectangle parent) {
+
     }
 }

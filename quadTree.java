@@ -18,6 +18,8 @@
  * @since 1.0.0
  */
 
+import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
+
 import java.awt.*;
 import java.io.*;
 import java.lang.reflect.Array;
@@ -373,32 +375,57 @@ public class quadTree implements Serializable {
         return result;
     }
 
-    public ArrayList<Tweet> queryKNN(double x, double y, int k, double range) {
-        ArrayList<Tweet> q1 ;
-        ArrayList<Tweet> result = new ArrayList<>();
-
-        q1 = this.rangeQuery(x,y, range);
-        if(q1.size() < k) {
-            q1 = this.rangeQuery(x,y, range+1);
-        } else if(q1.size() == k) {
-            return q1;
-        } else {
-            Comparator<Tweet> c = new Comparator<Tweet>() {
-                @Override
-                public int compare(Tweet o1, Tweet o2) {
-                    if(Math.sqrt(Math.pow(o1.Userlocation[0] - x,2) +  Math.pow(o1.Userlocation[1] - y,2)) <= Math.sqrt(Math.pow(o2.Userlocation[0] - x,2) +  Math.pow(o2.Userlocation[1] - y,2))){
-                        return -1;
-                    }
-                    return 1;
-                }
-            };
-            q1.sort(c);
-            for(int i = 0; i < k; i++) {
-//                System.out.println(q1.get(i).Userlocation[0]);
-                result.add(q1.get(i));
+    public PriorityQueue<Tweet> queryKNN(double x, double y, int k) {
+//      PriorityQueue<Tweet> result = new PriorityQueue<Tweet>((o1, o2) ->(int) (Math.sqrt(Math.pow(o2.Userlocation[0] - x,2) +  Math.pow(o2.Userlocation[1] - y,2)) - Math.sqrt(Math.pow(o1.Userlocation[0] - x,2) +  Math.pow(o1.Userlocation[1] - y,2))));
+        PriorityQueue<Tweet> result = new PriorityQueue<>(new Comparator<Tweet>() {
+            @Override
+            public int compare(Tweet o1, Tweet o2) {
+                return (int) (Math.sqrt(Math.pow(o2.Userlocation[0] - x,2) +  Math.pow(o2.Userlocation[1] - y,2)) - Math.sqrt(Math.pow(o1.Userlocation[0] - x,2) +  Math.pow(o1.Userlocation[1] - y,2)));
             }
-            return result;
+        });
+        quadTree leaf = findleaf(this,x,y);
+        if(leaf != null) {
+
+            if(leaf.list.size() > k) {
+                for(int i = 0; i < 3; i++) {
+                    result.add(leaf.list.get((int) (Math.random() * leaf.list.size())));
+                }
+            }
+            Tweet third = result.peek();
+            double radius = Math.sqrt(Math.pow(third.Userlocation[0] - x,2) +  Math.pow(third.Userlocation[1] - y,2));
+            for (Tweet t: leaf.list) {
+                if((Math.sqrt(Math.pow(t.Userlocation[0] - x,2) +  Math.pow(t.Userlocation[1] - y,2))) < radius){
+                    result.add(t);
+                }
+            }
+            if(result.size() > k) {
+                for (int i = result.size(); i > k;i--) {
+                    Tweet tre = result.remove();
+                    System.out.println((Math.sqrt(Math.pow(tre.Userlocation[0] - x,2) +  Math.pow(tre.Userlocation[1] - y,2))));
+                }
+            }
         }
-        return null;
+
+        Arrays.sort(result.toArray());
+
+//        while(!result.isEmpty()) {
+//            Tweet tre = result.remove();
+//            System.out.println((Math.sqrt(Math.pow(tre.Userlocation[0] - x,2) +  Math.pow(tre.Userlocation[1] - y,2))));
+//
+//        }
+        return result;
+    }
+
+    public quadTree findleaf(quadTree tr,double x, double y) {
+        if (tr.list.size() != 0) {
+                return   tr;
+        } else {
+            for (quadTree child:tr.children) {
+                if (child.maxY >= y && child.minY <= y && child.maxX >= x && child.minX <= x) {
+                    return tr.findleaf(child,x,y);
+                }
+            }
+            return null;
+        }
     }
 }

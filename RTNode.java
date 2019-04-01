@@ -9,10 +9,7 @@
  * 作者姓名           修改时间           版本号              描述
  */
 
-import com.sun.org.apache.bcel.internal.generic.RETURN;
-
 import java.util.ArrayList;
-import java.util.jar.Attributes;
 
 /**
  * 〈一句话功能简述〉<br> 
@@ -23,27 +20,22 @@ import java.util.jar.Attributes;
  * @since 1.0.0
  */
 public class RTNode {
-    private Rtree tree;
-    private RTNode parent;
-
-    public int insertIndex;
-    public int deleteIndex;
-    private int nodeCapacity;
-    private int recCapacity;
-    public int usedSpace;
-    private ArrayList<RTNode> children;
-    private Rectangle rectangle;
-    private ArrayList<Tweet> userList;
+    public Rtree tree;
+    public RTNode parent;
+    public int maxChildren;
+    public int minChildren;
+    public int TweetCapacity;
+    public ArrayList<RTNode> children;
+    public Rectangle rectangle;
+    public ArrayList<Tweet> tweets;
 
 
-    public RTNode(Rtree tree, RTNode parent, int nodeCapacity, int recCapacity, ArrayList<RTNode> children) {
+    public RTNode(Rtree tree, RTNode parent, ArrayList<RTNode> children) {
         this.tree = tree;
         this.parent = parent;
-        this.nodeCapacity = nodeCapacity;
-        this.recCapacity = recCapacity;
-        this.usedSpace = 0;
-
-
+        this.maxChildren = tree.maxChildren;
+        this.minChildren = tree.minChildren;
+        this.TweetCapacity = tree.TweetCapacity;
         if(children == null || children.size() == 0) {
             this.children = new ArrayList<>();
         } else   {
@@ -51,66 +43,36 @@ public class RTNode {
         }
     }
 
-    public Rectangle getRectangle() {
-        return rectangle;
-    }
-
-    public ArrayList<Tweet> getUserList() {
-        return userList;
-    }
-
-    public Rtree getTree() {
-        return tree;
-    }
-
-
-
-    public int getNodeCapacity() {
-        return nodeCapacity;
-    }
-
-    public int getRecCapacity() {
-        return recCapacity;
-    }
-
-
-
-    public RTNode getParent() {
-        return parent;
-    }
-
-    public ArrayList<RTNode> getChildren() {
-        return children;
-    }
 
     public boolean isRoot() {
-        return (this.getParent() == null);
+        return (this.parent == null);
     }
 
     public boolean isLeaf() {
-        return (this.userList.size() != 0);
+        return (this.children.size() != 0);
     }
 
     public boolean isIndex() {
         return false;
     }
 
-    public void addData(Tweet post) {
-        this.userList.add(post);
-        this.usedSpace++;
+
+
+    public void splitChildrenQuadatic(){
+
     }
 
     public RTNode splitNodeQuadratic() {
-        RTNode newNode = new RTNode(this.tree, this.parent,this.getNodeCapacity(),this.recCapacity,null);
-        this.parent.getChildren().add(newNode);
+        RTNode newNode = new RTNode(this.tree, this.parent,null);
+        this.parent.children.add(newNode);
         Tweet seed1 = null;
         Tweet seed2 = null;
         double Area = 0;
         ArrayList<Tweet> store = new ArrayList<>();
 
-        for (Tweet tw1: this.userList) {
+        for (Tweet tw1: this.tweets) {
             store.add(tw1);
-            for (Tweet tw2: this.userList) {
+            for (Tweet tw2: this.tweets) {
                 if (this.getAreaofTweet(tw1,tw2) > Area) {
                     Area = this.getAreaofTweet(tw1,tw2);
                     seed1 = tw1;
@@ -118,44 +80,38 @@ public class RTNode {
                 }
             }
         }
-        this.userList.clear();
-        this.userList.add(seed1);
-        newNode.userList.add(seed2);
-        this.rectangle.setMaxX(seed1.Userlocation[0]);
-        this.rectangle.setMinX(seed1.Userlocation[0]);
-        this.rectangle.setMaxY(seed1.Userlocation[1]);
-        this.rectangle.setMinY(seed1.Userlocation[1]);
-        newNode.rectangle.setMaxX(seed2.Userlocation[0]);
-        newNode.rectangle.setMinX(seed2.Userlocation[0]);
-        newNode.rectangle.setMaxY(seed2.Userlocation[1]);
-        newNode.rectangle.setMinY(seed2.Userlocation[1]);
+        this.tweets.clear();
+        this.tweets.add(seed1);
+        newNode.tweets.add(seed2);
+        this.rectangle.maxX = seed1.Userlocation[0];
+        this.rectangle.minX = seed1.Userlocation[0];
+        this.rectangle.maxY = seed1.Userlocation[1];
+        this.rectangle.minY = seed1.Userlocation[1];
+        newNode.rectangle.maxX = seed2.Userlocation[0];
+        newNode.rectangle.minX = seed2.Userlocation[0];
+        newNode.rectangle.maxY = seed2.Userlocation[1];
+        newNode.rectangle.minY = seed2.Userlocation[1];
 
 
         for (Tweet post : store) {
                 if (this.enlargement(post) > newNode.enlargement(post)) {
-                        newNode.userList.add(post);
+                        newNode.tweets.add(post);
                         newNode.rectangle.updateRec(post);
                 } else {
-                        this.userList.add(post);
+                        this.tweets.add(post);
                         this.rectangle.updateRec(post);
                 }
             }
-            if(newNode.getUserList().size() != 0) {
+            if(newNode.tweets.size() != 0) {
                 return newNode;
             }
-            return null;
+        return null;
     }
 
     public void adjustTree(RTNode newnode){
 
             while(!this.isRoot()) {
-                RTNode parent = this.parent;
-                for ( Tweet post: this.userList  ) {
-                    parent.rectangle.updateRec(post);
-                }
-                if(parent.getChildren().size() >= nodeCapacity) {
 
-                }
             }
     }
     public double getAreaofTweet(Tweet tw1, Tweet tw2) {
@@ -164,9 +120,7 @@ public class RTNode {
     }
 
     public RTNode chooseLeaf(Tweet post) {
-        if(this.isLeaf() && this.isRoot()) {
-            return this;
-        }
+
         if(this.isLeaf()) {
             return this;
         }
@@ -191,23 +145,16 @@ public class RTNode {
         if(this.rectangle.isUserHere(post)) {
             return 0;
         } else {
-            if ((post.Userlocation[0] - rectangle.getMaxX()) * post.Userlocation[0] - rectangle.getMinX() > 0) {
-                if ((post.Userlocation[1] - rectangle.getMaxY()) * post.Userlocation[1] - rectangle.getMinY() > 0) {
-                    return Math.max(Math.abs(post.Userlocation[0] - rectangle.getMaxX()), Math.abs(post.Userlocation[0] - rectangle.getMinX()))
-                            * Math.max(Math.abs(post.Userlocation[1] - rectangle.getMaxY()), Math.abs(post.Userlocation[1] - rectangle.getMinY())) - this.rectangle.getArea();
+            if ((post.Userlocation[0] - rectangle.maxX )* (post.Userlocation[0] - rectangle.minX) > 0) {
+                if ((post.Userlocation[1] - rectangle.maxY) * (post.Userlocation[1] - rectangle.minY) > 0) {
+                    return Math.max(Math.abs(post.Userlocation[0] - rectangle.maxX), Math.abs(post.Userlocation[0] - rectangle.minX))
+                            * Math.max(Math.abs(post.Userlocation[1] - rectangle.maxY), Math.abs(post.Userlocation[1] - rectangle.minY) - this.rectangle.getArea());
                 } else {
-                        return Math.min(Math.abs(post.Userlocation[0] - rectangle.getMaxX()), Math.abs(post.Userlocation[0] - rectangle.getMinX())) * (this.rectangle.getMaxY() - this.rectangle.getMinY());
+                        return Math.min(Math.abs(post.Userlocation[0] - rectangle.maxX), Math.abs(post.Userlocation[0] - rectangle.minX)) * (this.rectangle.maxY - this.rectangle.minY);
                 }
             } else {
-                return Math.min(Math.abs(post.Userlocation[1] - rectangle.getMaxY()), Math.abs(post.Userlocation[1] - rectangle.getMinY())) * (this.rectangle.getMaxX() - this.rectangle.getMinX());
+                return Math.min(Math.abs(post.Userlocation[1] - rectangle.maxY), Math.abs(post.Userlocation[1] - rectangle.minY)) * (this.rectangle.maxX - this.rectangle.minX);
             }
         }
     }
-    public void condenseTree() {}
-
-    public int[][] quadrasticSplit() {return null;}
-
-    public int[] pickSeed() {return null;}
-
-
 }
