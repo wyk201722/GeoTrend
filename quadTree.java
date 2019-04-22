@@ -18,7 +18,7 @@
  * @since 1.0.0
  */
 
-import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
+
 
 import java.awt.*;
 import java.io.*;
@@ -125,7 +125,7 @@ public class quadTree implements Serializable {
         {
             try { // 防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw
                 /* 读入TXT文件 */
-                String pathname = "C:\\Users\\youkun\\Downloads\\2016-06-12_02-26-46 (1).txt"; // 绝对路径或相对路径都可以，这里是绝对路径，写入文件时演示相对路径
+                String pathname = "./2016-06-12_02-26-46.txt"; // 绝对路径或相对路径都可以，这里是绝对路径，写入文件时演示相对路径
                 File filename = new File(pathname); // 要读取以上路径的input。txt文件
                 InputStreamReader reader = new InputStreamReader(
                         new FileInputStream(filename)); // 建立一个输入流对象reader
@@ -376,15 +376,10 @@ public class quadTree implements Serializable {
     }
 
     public PriorityQueue<Tweet> queryKNN(double x, double y, int k) {
-//      PriorityQueue<Tweet> result = new PriorityQueue<Tweet>((o1, o2) ->(int) (Math.sqrt(Math.pow(o2.Userlocation[0] - x,2) +  Math.pow(o2.Userlocation[1] - y,2)) - Math.sqrt(Math.pow(o1.Userlocation[0] - x,2) +  Math.pow(o1.Userlocation[1] - y,2))));
-        PriorityQueue<Tweet> result = new PriorityQueue<>(new Comparator<Tweet>() {
-            @Override
-            public int compare(Tweet o1, Tweet o2) {
-                return (int) (Math.sqrt(Math.pow(o2.Userlocation[0] - x,2) +  Math.pow(o2.Userlocation[1] - y,2)) - Math.sqrt(Math.pow(o1.Userlocation[0] - x,2) +  Math.pow(o1.Userlocation[1] - y,2)));
-            }
-        });
+      PriorityQueue<Tweet> result = new PriorityQueue<Tweet>((o1, o2) ->(int) Math.ceil((Math.sqrt(Math.pow(o2.Userlocation[0] - x,2) +  Math.pow(o2.Userlocation[1] - y,2)) - Math.sqrt(Math.pow(o1.Userlocation[0] - x,2) +  Math.pow(o1.Userlocation[1] - y,2)))));
+      PriorityQueue<Tweet> temp = new PriorityQueue<Tweet>((o1, o2) ->(int) Math.ceil((Math.sqrt(Math.pow(o2.Userlocation[0] - x,2) +  Math.pow(o2.Userlocation[1] - y,2)) - Math.sqrt(Math.pow(o1.Userlocation[0] - x,2) +  Math.pow(o1.Userlocation[1] - y,2)))));
         quadTree leaf = findleaf(this,x,y);
-        if(leaf != null) {
+        if(leaf != null || leaf.list.size() > k) {
 
             if(leaf.list.size() > k) {
                 for(int i = 0; i < 3; i++) {
@@ -398,21 +393,17 @@ public class quadTree implements Serializable {
                     result.add(t);
                 }
             }
-            if(result.size() > k) {
-                for (int i = result.size(); i > k;i--) {
-                    Tweet tre = result.remove();
-                    System.out.println((Math.sqrt(Math.pow(tre.Userlocation[0] - x,2) +  Math.pow(tre.Userlocation[1] - y,2))));
-                }
+
+        } else {
+            for (quadTree child:leaf.parent.children) {
+                    result.addAll(child.queryKNN(x,y,k-leaf.list.size()));
             }
         }
-
-        Arrays.sort(result.toArray());
-
-//        while(!result.isEmpty()) {
-//            Tweet tre = result.remove();
-//            System.out.println((Math.sqrt(Math.pow(tre.Userlocation[0] - x,2) +  Math.pow(tre.Userlocation[1] - y,2))));
-//
-//        }
+        if(result.size() > k) {
+            for (int i = result.size(); i > k;i--) {
+                Tweet tre = result.remove();
+            }
+        }
         return result;
     }
 

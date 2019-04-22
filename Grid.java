@@ -51,7 +51,7 @@ public class Grid {
         {
             try { // 防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw
                 /* 读入TXT文件 */
-                String pathname = "C:\\Users\\youkun\\Downloads\\2016-06-12_02-26-46 (1).txt"; // 绝对路径或相对路径都可以，这里是绝对路径，写入文件时演示相对路径
+                String pathname = "2016-06-12_02-26-46.txt"; // 绝对路径或相对路径都可以，这里是绝对路径，写入文件时演示相对路径
                 File filename = new File(pathname); // 要读取以上路径的input。txt文件
                 InputStreamReader reader = new InputStreamReader(
                         new FileInputStream(filename)); // 建立一个输入流对象reader
@@ -65,7 +65,7 @@ public class Grid {
                     line = br.readLine(); // 一次读入一行数据//line != null
                     count ++;
                 }
-                System.out.println(count);
+
 //                for(int j = 0; j < UserSet.size(); j++ ) {
 //                    System.out.println(j);
 //                    for(int u = 0; u < UserSet.get(j).text.size(); u++) {
